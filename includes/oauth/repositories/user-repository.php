@@ -27,9 +27,9 @@ final class UserRepository implements UserRepositoryInterface
     // We use the authorization_code + PKCE grant only. The password grant is
     // not enabled, so this method is never called in practice.
     public function getUserEntityByUserCredentials(
-        mixed $username,
-        mixed $password,
-        mixed $grantType,
+        string $username,
+        string $password,
+        string $grantType,
         ClientEntityInterface $clientEntity,
     ): ?UserEntityInterface {
         return null;

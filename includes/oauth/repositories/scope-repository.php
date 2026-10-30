@@ -26,9 +26,8 @@ final class ScopeEntity implements ScopeEntityInterface
 // @mago-expect lint:single-class-per-file
 final class ScopeRepository implements ScopeRepositoryInterface
 {
-    public function getScopeEntityByIdentifier(mixed $identifier): ?ScopeEntityInterface
+    public function getScopeEntityByIdentifier(string $identifier): ?ScopeEntityInterface
     {
-        $identifier = (string) $identifier;
         if (!in_array($identifier, \ElementorMCP\OAuth\supported_scopes(), strict: true)) {
             return null;
         }
@@ -40,9 +39,10 @@ final class ScopeRepository implements ScopeRepositoryInterface
     /** @param array<array-key, ScopeEntityInterface> $scopes */
     public function finalizeScopes(
         array $scopes,
-        mixed $grantType,
+        string $grantType,
         ClientEntityInterface $clientEntity,
-        mixed $userIdentifier = null,
+        string|null $userIdentifier = null,
+        ?string $authCodeId = null,
     ): array {
         // Every accepted authorization and refresh flow converges on the single full-access grant.
         $mcp = new ScopeEntity();

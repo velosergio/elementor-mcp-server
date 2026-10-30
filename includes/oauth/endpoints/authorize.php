@@ -21,6 +21,23 @@ const PENDING_PREFIX = 'elementor_mcp_oauth_pending_';
 const PAGE_SLUG = 'elementor-mcp-oauth-authorize';
 
 /**
+ * RFC 8252 §7.3: a native/desktop client binds an ephemeral loopback port that can differ from the
+ * one it registered, so league's validator matches 127.0.0.1/[::1] ignoring the port (and requires
+ * an exact match otherwise), and localhost_redirect_matches() extends that to localhost.
+ * LoopbackAuthCodeGrant runs the same pair at the consent and token steps, so validating it the same
+ * way here keeps them consistent.
+ *
+ * @param string|array<array-key, string> $registered
+ */
+function client_allows_redirect_uri(string|array $registered, string $redirect_uri): bool
+{
+    return (
+        \ElementorMCP\OAuth\ClientValidation\localhost_redirect_matches((array) $registered, $redirect_uri)
+        || (new RedirectUriValidator($registered))->validateRedirectUri($redirect_uri)
+    );
+}
+
+/**
  * The authorization endpoint is the one OAuth step that must identify the logged-in
  * WordPress user, so it runs inside the wp-admin cookie context instead of on a REST
  * route. Cookie authentication for the WordPress REST API is disabled or nonce-gated on
@@ -124,12 +141,7 @@ function handle(): void
         return;
     }
 
-    // RFC 8252 §7.3: a native/desktop client binds an ephemeral loopback port that can differ from
-    // the one it registered, so league's validator matches 127.0.0.1/[::1] ignoring the port (and
-    // requires an exact match otherwise). This is the same check league runs at the consent step, so
-    // validating it the same way here keeps the two consistent.
-    $uri_validator = new RedirectUriValidator($client->getRedirectUri());
-    if (!$uri_validator->validateRedirectUri($redirect_uri)) {
+    if (!client_allows_redirect_uri($client->getRedirectUri(), $redirect_uri)) {
         wp_die(esc_html__('redirect_uri not registered for this client.', domain: 'elementor-mcp'), title: '', args: [
             'response' => 400,
         ]);

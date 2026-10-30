@@ -19,6 +19,7 @@ use function ElementorMCP\OAuth\ClientIdMetadata\resolved_addresses_are_public;
 use function ElementorMCP\OAuth\ClientIdMetadata\validate_client_id_url;
 use function ElementorMCP\OAuth\ClientIdMetadata\validate_document;
 use function ElementorMCP\OAuth\ClientIdMetadata\validate_redirect_uri;
+use function ElementorMCP\OAuth\ClientValidation\localhost_redirect_matches;
 
 /**
  * Client ID Metadata Documents, and the SSRF surface they open.
@@ -264,6 +265,65 @@ final class ClientIdMetadataTest extends TestCase
 
         self::assertIsArray($result);
         self::assertSame('web', $result['application_type']);
+    }
+
+    public function testOmittedApplicationTypeWithOnlyLoopbackRedirectsIsNative(): void
+    {
+        $document = $this->document([
+            'redirect_uris' => ['http://localhost/callback', 'http://127.0.0.1/callback'],
+        ]);
+        unset($document['application_type']);
+
+        $result = validate_document($document, 'https://app.example.com/c.json');
+
+        self::assertIsArray($result);
+        self::assertSame('native', $result['application_type']);
+    }
+
+    public function testOmittedApplicationTypeWithMixedRedirectsIsStillRefused(): void
+    {
+        $document = $this->document([
+            'redirect_uris' => ['http://localhost/callback', 'https://app.example.com/callback'],
+        ]);
+        unset($document['application_type']);
+
+        self::assertInstanceOf(WP_Error::class, validate_document($document, 'https://app.example.com/c.json'));
+    }
+
+    public function testDeclaredWebTypeIsNotOverriddenByLoopbackRedirects(): void
+    {
+        $document = $this->document(['redirect_uris' => ['http://localhost/callback']]);
+
+        self::assertInstanceOf(WP_Error::class, validate_document($document, 'https://app.example.com/c.json'));
+    }
+
+    #[DataProvider('localhostRedirectProvider')]
+    public function testLocalhostRedirectMatchesIgnoringOnlyThePort(string $requested, bool $expected): void
+    {
+        self::assertSame($expected, localhost_redirect_matches(['http://localhost/callback'], $requested));
+    }
+
+    /** @return array<string, array{string, bool}> */
+    public static function localhostRedirectProvider(): array
+    {
+        return [
+            'ephemeral port' => ['http://localhost:44844/callback', true],
+            'no port' => ['http://localhost/callback', true],
+            'other path' => ['http://localhost:44844/other', false],
+            'extra query' => ['http://localhost:44844/callback?x=1', false],
+            'https' => ['https://localhost:44844/callback', false],
+            'other host' => ['http://evil.example:44844/callback', false],
+            'localhost as subdomain' => ['http://localhost.evil.example/callback', false],
+            'userinfo' => ['http://localhost@evil.example/callback', false],
+            'userinfo on localhost' => ['http://evil.example@localhost/callback', false],
+            'backslash' => ['http://localhost:1\\@evil.example/callback', false],
+            'fragment' => ['http://localhost:44844/callback#x', false],
+        ];
+    }
+
+    public function testLocalhostRedirectDoesNotMatchOtherRegisteredHosts(): void
+    {
+        self::assertFalse(localhost_redirect_matches(['http://127.0.0.1/callback'], 'http://localhost:44844/callback'));
     }
 
     /**

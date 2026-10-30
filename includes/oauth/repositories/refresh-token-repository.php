@@ -47,9 +47,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         ]);
     }
 
-    public function revokeRefreshToken(mixed $tokenId): void
+    public function revokeRefreshToken(string $tokenId): void
     {
-        $tokenId = (string) $tokenId;
         // @mago-expect lint:no-global
         global $wpdb;
         /** @var \wpdb $wpdb */
@@ -67,13 +66,12 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    public function isRefreshTokenRevoked(mixed $tokenId): bool
+    public function isRefreshTokenRevoked(string $tokenId): bool
     {
         // A pure check with no side effects: league calls this before validating the requested
         // scopes and before persisting the new tokens, so consuming the refresh token here would
         // lose it on a later scope or persistence failure. Single-use enforcement is handled by
         // serializing the exchange in the token endpoint (see endpoints/token.php).
-        $tokenId = (string) $tokenId;
         // @mago-expect lint:no-global
         global $wpdb;
         /** @var \wpdb $wpdb */

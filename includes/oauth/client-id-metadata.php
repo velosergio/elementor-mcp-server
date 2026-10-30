@@ -288,7 +288,7 @@ function validate_document(array $document, string $client_id): array|WP_Error
         return new WP_Error('invalid_redirect_uris', 'The metadata document must declare at least one redirect URI.');
     }
 
-    $application_type = $document['application_type'] ?? 'web';
+    $application_type = $document['application_type'] ?? default_application_type($redirect_uris);
     if (!in_array($application_type, ['web', 'native'], strict: true)) {
         return new WP_Error('invalid_application_type', 'application_type must be either "web" or "native".');
     }
@@ -485,4 +485,30 @@ function fetch_client_metadata(string $client_id): array|WP_Error
 function is_metadata_document_client_id(string $client_id): bool
 {
     return str_starts_with(strtolower($client_id), 'https://');
+}
+
+/**
+ * The application type of a document that does not declare one.
+ *
+ * Web, unless every redirect URI is plain HTTP to a loopback host: such a client
+ * could never pass the web rules, so it can only be native. Claude Code publishes
+ * exactly such a document.
+ *
+ * @param array<array-key, mixed> $redirect_uris
+ */
+function default_application_type(array $redirect_uris): string
+{
+    // @mago-expect analysis:mixed-assignment
+    foreach ($redirect_uris as $uri) {
+        // @mago-expect analysis:mixed-assignment
+        $parts = is_string($uri) ? wp_parse_url($uri) : false;
+        if (!is_array($parts) || strtolower((string) ($parts['scheme'] ?? '')) !== 'http') {
+            return 'web';
+        }
+        if (!in_array(strtolower((string) ($parts['host'] ?? '')), ['localhost', '127.0.0.1', '::1'], strict: true)) {
+            return 'web';
+        }
+    }
+
+    return 'native';
 }

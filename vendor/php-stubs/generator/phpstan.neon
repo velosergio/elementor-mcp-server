@@ -1,0 +1,6 @@
+parameters:
+    level: max
+    paths:
+        - src
+    symfony:
+        consoleApplicationLoader: test/console-loader.php

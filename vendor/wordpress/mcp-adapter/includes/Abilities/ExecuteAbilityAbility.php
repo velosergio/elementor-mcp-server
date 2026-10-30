@@ -20,7 +20,7 @@ use WP_Error;
  *
  * SECURITY CONSIDERATIONS:
  * - This ability has openWorldHint=true, allowing execution of any registered ability
- * - Only abilities with mcp.public=true metadata can be executed via default MCP server.
+ * - Only abilities with effective MCP public exposure can be executed via default MCP server.
  * - Requires proper WordPress capability checks for secure operation
  * - Caller identity verification is enforced through WordPress authentication
  *
@@ -114,12 +114,12 @@ final class ExecuteAbilityAbility {
 			);
 		}
 
-		$ability = wp_get_ability( $ability_name );
+		$ability = wp_has_ability( $ability_name ) ? wp_get_ability( $ability_name ) : null;
 
 		if ( ! $ability ) {
 			return array(
 				'success' => false,
-				'error'   => "Ability '{$ability_name}' not found",
+				'error'   => self::ability_not_found_message( $ability_name ),
 			);
 		}
 

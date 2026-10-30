@@ -33,13 +33,13 @@ final class AccessTokenEntity implements AccessTokenEntityInterface
      * resource (RFC 8707 / MCP authorization) rather than the client id. The middleware validates
      * this aud, so a token minted for this server cannot be presented to a different resource.
      */
-    public function __toString(): string
+    public function toString(): string
     {
         $this->initJwtConfiguration();
 
         $audience = \ElementorMCP\OAuth\resource_identifier();
-        $tokenId = (string) $this->getIdentifier();
-        $subject = (string) $this->getUserIdentifier();
+        $tokenId = $this->getIdentifier();
+        $subject = $this->getUserIdentifier() ?? $this->getClient()->getIdentifier();
         $now = new DateTimeImmutable();
 
         $builder = $this->jwtConfiguration
@@ -71,15 +71,14 @@ final class AccessTokenRepository implements AccessTokenRepositoryInterface
     public function getNewToken(
         ClientEntityInterface $clientEntity,
         array $scopes,
-        mixed $userIdentifier = null,
+        string|null $userIdentifier = null,
     ): AccessTokenEntityInterface {
         $token = new AccessTokenEntity();
         $token->setClient($clientEntity);
         foreach ($scopes as $scope) {
             $token->addScope($scope);
         }
-        if ($userIdentifier !== null) {
-            // @mago-expect analysis:mixed-argument
+        if ($userIdentifier !== null && $userIdentifier !== '') {
             $token->setUserIdentifier($userIdentifier);
         }
         return $token;
@@ -103,9 +102,8 @@ final class AccessTokenRepository implements AccessTokenRepositoryInterface
         ]);
     }
 
-    public function revokeAccessToken(mixed $tokenId): void
+    public function revokeAccessToken(string $tokenId): void
     {
-        $tokenId = (string) $tokenId;
         // @mago-expect lint:no-global
         global $wpdb;
         /** @var \wpdb $wpdb */
@@ -150,9 +148,8 @@ final class AccessTokenRepository implements AccessTokenRepositoryInterface
         );
     }
 
-    public function isAccessTokenRevoked(mixed $tokenId): bool
+    public function isAccessTokenRevoked(string $tokenId): bool
     {
-        $tokenId = (string) $tokenId;
         // @mago-expect lint:no-global
         global $wpdb;
         /** @var \wpdb $wpdb */

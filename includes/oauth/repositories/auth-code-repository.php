@@ -56,9 +56,8 @@ final class AuthCodeRepository implements AuthCodeRepositoryInterface
         ]);
     }
 
-    public function revokeAuthCode(mixed $codeId): void
+    public function revokeAuthCode(string $codeId): void
     {
-        $codeId = (string) $codeId;
         // @mago-expect lint:no-global
         global $wpdb;
         /** @var \wpdb $wpdb */
@@ -76,12 +75,11 @@ final class AuthCodeRepository implements AuthCodeRepositoryInterface
         }
     }
 
-    public function isAuthCodeRevoked(mixed $codeId): bool
+    public function isAuthCodeRevoked(string $codeId): bool
     {
         // A pure check with no side effects: league calls this before the client, redirect URI, and
         // PKCE code_verifier are validated, so it must not consume the code. Single-use is enforced
         // atomically in revokeAuthCode(), which league calls after a valid exchange.
-        $codeId = (string) $codeId;
         // @mago-expect lint:no-global
         global $wpdb;
         /** @var \wpdb $wpdb */

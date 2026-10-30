@@ -6,6 +6,6 @@
 		"start": "wp-scripts start src/chat/index.tsx --output-path=includes/assets/chat --output-filename=index.js"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^34.0.0"
+		"@wordpress/scripts": "^37.0.0"
 	}
 }

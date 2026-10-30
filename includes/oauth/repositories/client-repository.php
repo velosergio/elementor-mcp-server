@@ -70,11 +70,8 @@ final class ClientRepository implements ClientRepositoryInterface
         return $client_id;
     }
 
-    public function getClientEntity(mixed $clientIdentifier): ?ClientEntityInterface
+    public function getClientEntity(string $clientIdentifier): ?ClientEntityInterface
     {
-        // League's 8.5 ClientRepositoryInterface declares this parameter untyped, so the
-        // signature must widen to mixed; narrow back to string for the query below.
-        $clientIdentifier = (string) $clientIdentifier;
         // @mago-expect lint:no-global
         global $wpdb;
         /** @var \wpdb $wpdb */
@@ -142,7 +139,7 @@ final class ClientRepository implements ClientRepositoryInterface
         return $entity;
     }
 
-    public function validateClient(mixed $clientIdentifier, mixed $clientSecret, mixed $grantType): bool
+    public function validateClient(string $clientIdentifier, ?string $clientSecret, ?string $grantType): bool
     {
         return $this->getClientEntity($clientIdentifier) !== null;
     }

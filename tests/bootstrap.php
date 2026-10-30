@@ -61,6 +61,7 @@ foreach (['protocol', 'errors', 'headers', 'results', 'discover', 'transport'] a
 require_once dirname(__DIR__) . '/includes/preview/diff.php';
 
 require_once dirname(__DIR__) . '/includes/oauth/client-id-metadata.php';
+require_once dirname(__DIR__) . '/includes/oauth/client-validation.php';
 
 // The access-token module and the Bearer middleware. Both touch WordPress only
 // from inside their functions, so the parts under test here — credential shape,

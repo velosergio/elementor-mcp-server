@@ -177,6 +177,54 @@ function normalize_uri_host(array $parsed): string
     return $host;
 }
 
+/**
+ * Whether a requested http://localhost redirect matches a registered one, ignoring the port.
+ *
+ * RFC 8252 §7.3 lets a native client bind an ephemeral loopback port. League's validator honours
+ * that for 127.0.0.1 and [::1] but demands an exact match for localhost, which refuses a client
+ * that registers http://localhost/callback and listens on a port chosen at run time.
+ *
+ * @param array<array-key, mixed> $registered
+ */
+function localhost_redirect_matches(array $registered, string $requested): bool
+{
+    $target = localhost_redirect_without_port($requested);
+    if ($target === null) {
+        return false;
+    }
+
+    // @mago-expect analysis:mixed-assignment
+    foreach ($registered as $uri) {
+        if (is_string($uri) && localhost_redirect_without_port($uri) === $target) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * The path and query of an http://localhost URI, or null for anything else. URIs that parsers
+ * disagree about (backslashes, whitespace, userinfo) are refused rather than interpreted.
+ */
+function localhost_redirect_without_port(string $uri): ?string
+{
+    if (preg_match('/[\\\\\s]/', $uri) === 1) {
+        return null;
+    }
+
+    // @mago-expect analysis:mixed-assignment
+    $parts = wp_parse_url($uri);
+    if (!is_array($parts) || ($parts['user'] ?? null) !== null || ($parts['fragment'] ?? null) !== null) {
+        return null;
+    }
+    if (strtolower((string) ($parts['scheme'] ?? '')) !== 'http' || strtolower((string) ($parts['host'] ?? '')) !== 'localhost') {
+        return null;
+    }
+
+    return (string) ($parts['path'] ?? '') . '?' . (string) ($parts['query'] ?? '');
+}
+
 /** @return list<string>|null */
 function resolve_host_ips(string $host): ?array
 {

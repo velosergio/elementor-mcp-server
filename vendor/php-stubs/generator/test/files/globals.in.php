@@ -1,0 +1,33 @@
+<?php
+/** @var string */
+$a = 'a' . 'a';
+
+/** @var string $b */
+$GLOBALS['b'] = 'b' . 'b';
+
+$c = 'c' . 'c';
+
+$GLOBALS['d'] = 'd' . 'd';
+
+// Should not be included:
+
+$foo['bar'] = 'baz';
+
+$GLOBALS[$foo['bar']] = 'baz';
+
+$GLOBALS['0abc'] = 'baz';
+
+$GLOBALS['ab' . 'cd'] = 'baz';
+
+$foo->bar = 'baz';
+
+$$foo = 'bar';
+
+function () {
+};
+
+/** doc */
+$x = 'x' . 'x';
+
+/** @doc */
+$GLOBALS['y'] = 'y' . 'y';
