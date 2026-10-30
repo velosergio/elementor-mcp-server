@@ -14,50 +14,6 @@ return array(
 		'version' => '0.7.1.0',
 		'path'    => array( $vendorDir . '/wordpress/mcp-adapter/includes' )
 	),
-	'Symfony\\Polyfill\\Mbstring\\' => array(
-		'version' => '1.43.3.0',
-		'path'    => array( $vendorDir . '/symfony/polyfill-mbstring' )
-	),
-	'Symfony\\Polyfill\\Intl\\Normalizer\\' => array(
-		'version' => '1.43.0.0',
-		'path'    => array( $vendorDir . '/symfony/polyfill-intl-normalizer' )
-	),
-	'Symfony\\Polyfill\\Intl\\Grapheme\\' => array(
-		'version' => '1.43.3.0',
-		'path'    => array( $vendorDir . '/symfony/polyfill-intl-grapheme' )
-	),
-	'Symfony\\Polyfill\\Ctype\\' => array(
-		'version' => '1.37.0.0',
-		'path'    => array( $vendorDir . '/symfony/polyfill-ctype' )
-	),
-	'Symfony\\Contracts\\Service\\' => array(
-		'version' => '3.7.3.0',
-		'path'    => array( $vendorDir . '/symfony/service-contracts' )
-	),
-	'Symfony\\Component\\String\\' => array(
-		'version' => '8.1.10.0',
-		'path'    => array( $vendorDir . '/symfony/string' )
-	),
-	'Symfony\\Component\\Finder\\' => array(
-		'version' => '7.4.22.0',
-		'path'    => array( $vendorDir . '/symfony/finder' )
-	),
-	'Symfony\\Component\\Filesystem\\' => array(
-		'version' => '7.4.21.0',
-		'path'    => array( $vendorDir . '/symfony/filesystem' )
-	),
-	'Symfony\\Component\\Console\\' => array(
-		'version' => '7.4.22.0',
-		'path'    => array( $vendorDir . '/symfony/console' )
-	),
-	'StubsGenerator\\' => array(
-		'version' => '0.9.0.0',
-		'path'    => array( $vendorDir . '/php-stubs/generator/src' )
-	),
-	'Revolt\\' => array(
-		'version' => '1.0.9.0',
-		'path'    => array( $vendorDir . '/revolt/event-loop/src' )
-	),
 	'Psr\\Http\\Server\\' => array(
 		'version' => '1.0.2.0',
 		'path'    => array( $vendorDir . '/psr/http-server-handler/src', $vendorDir . '/psr/http-server-middleware/src' )
@@ -70,33 +26,17 @@ return array(
 		'version' => '1.0.0.0',
 		'path'    => array( $vendorDir . '/psr/event-dispatcher/src' )
 	),
-	'Psr\\Container\\' => array(
-		'version' => '2.0.2.0',
-		'path'    => array( $vendorDir . '/psr/container/src' )
-	),
 	'Psr\\Clock\\' => array(
 		'version' => '1.0.0.0',
 		'path'    => array( $vendorDir . '/psr/clock/src' )
-	),
-	'PhpParser\\' => array(
-		'version' => '5.9.0.0',
-		'path'    => array( $vendorDir . '/nikic/php-parser/lib/PhpParser' )
-	),
-	'PHPStan\\PhpDocParser\\' => array(
-		'version' => '2.4.1.0',
-		'path'    => array( $vendorDir . '/phpstan/phpdoc-parser/src' )
 	),
 	'Nyholm\\Psr7\\' => array(
 		'version' => '1.8.2.0',
 		'path'    => array( $vendorDir . '/nyholm/psr7/src' )
 	),
-	'Mago\\' => array(
-		'version' => '1.59.0.0',
-		'path'    => array( $vendorDir . '/carthage-software/mago/composer/src' )
-	),
 	'League\\Uri\\' => array(
 		'version' => '7.9.1.0',
-		'path'    => array( $vendorDir . '/league/uri-interfaces', $vendorDir . '/league/uri' )
+		'path'    => array( $vendorDir . '/league/uri', $vendorDir . '/league/uri-interfaces' )
 	),
 	'League\\OAuth2\\Server\\' => array(
 		'version' => '9.4.1.0',
@@ -113,10 +53,6 @@ return array(
 	'Defuse\\Crypto\\' => array(
 		'version' => '2.4.0.0',
 		'path'    => array( $vendorDir . '/defuse/php-encryption/src' )
-	),
-	'DeepCopy\\' => array(
-		'version' => '1.14.0.0',
-		'path'    => array( $vendorDir . '/myclabs/deep-copy/src/DeepCopy' )
 	),
 	'Automattic\\Jetpack\\Autoloader\\' => array(
 		'version' => '6.0.2',
